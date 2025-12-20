@@ -10,29 +10,33 @@ class SymptomChip extends StatelessWidget {
     required this.onTap,
   });
 
+  static const Color primaryColor = Color(0xFF2E7C9A);   // logo dark
+  static const Color secondaryColor = Color(0xFF6FBFCC); // logo light
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: 8),
       child: ActionChip(
         label: Text(
           label,
-          style: TextStyle(
-            color: Color(0xFF2196F3),
+          style: const TextStyle(
+            fontFamily: 'K2D',
+            color: primaryColor,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
         ),
-        backgroundColor: Color(0xFF2196F3).withOpacity(0.1),
+        backgroundColor: secondaryColor.withOpacity(0.18),
         side: BorderSide(
-          color: Color(0xFF2196F3).withOpacity(0.3),
+          color: secondaryColor.withOpacity(0.6),
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
         onPressed: onTap,
         elevation: 0,
-        pressElevation: 2,
+        pressElevation: 1.5,
       ),
     );
   }

@@ -28,7 +28,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> _messages = [];
   final ConversationTree _conversationTree = ConversationTree();
   final MedicalTrie _medicalTrie = MedicalTrie();
-  
+
   bool _isTyping = false;
   int _currentIndex = 0;
   List<String> _detectedSymptoms = [];
@@ -88,7 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
     Future.delayed(Duration(milliseconds: 800), () {
       // First try exact match with Trie
       String? trieResult = _medicalTrie.search(input.toLowerCase());
-      
+
       if (trieResult != null) {
         _conversationTree.currentNodeId = trieResult;
         _moveToNextNode();
@@ -97,7 +97,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       // Try to find next node based on current conversation
       String? nextNodeId = _conversationTree.findNextNode(input);
-      
+
       if (nextNodeId != null) {
         _conversationTree.currentNodeId = nextNodeId;
         _moveToNextNode();
@@ -113,7 +113,7 @@ class _ChatScreenState extends State<ChatScreen> {
         'body ache',
         'cold'
       ];
-      
+
       String closestMatch = LevenshteinDistance.findClosestMatch(
         input.toLowerCase(),
         allSymptoms,
@@ -141,7 +141,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _moveToNextNode() {
     ConversationNode node =
-        _conversationTree.getNode(_conversationTree.currentNodeId);
+    _conversationTree.getNode(_conversationTree.currentNodeId);
     setState(() {
       _isTyping = false;
     });
@@ -175,7 +175,7 @@ class _ChatScreenState extends State<ChatScreen> {
       for (var r in remedy.homeRemedies) {
         remedyMessage += '$r\n';
       }
-      
+
       if (remedy.medications.isNotEmpty) {
         remedyMessage += '\n💊 Medications:\n';
         for (var med in remedy.medications) {
@@ -191,7 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
       }
 
       _addBotMessage(remedyMessage);
-      
+
       Future.delayed(Duration(milliseconds: 500), () {
         _showSaveConsultationOption();
       });
@@ -216,8 +216,11 @@ class _ChatScreenState extends State<ChatScreen> {
   void _saveConsultation() async {
     if (_messages.isEmpty) return;
 
-    String consultationId = DateTime.now().millisecondsSinceEpoch.toString();
-    
+    String consultationId = DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString();
+
     Consultation consultation = Consultation(
       id: consultationId,
       timestamp: DateTime.now(),
@@ -299,38 +302,51 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xFF2196F3),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF2E7C9A),
+                Color(0xFF6FBFCC),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         title: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.favorite,
-                color: Color(0xFF2196F3),
-                size: 24,
+              child: Image.asset(
+                'assets/images/app_logo.png',
+                height: 28,
               ),
             ),
-            SizedBox(width: 12),
-            Column(
+            const SizedBox(width: 12),
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'TeleMedi',
                   style: TextStyle(
+                    fontFamily: 'K2D',
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
                 ),
                 Text(
-                  'Online • Offline Mode',
+                  'Offline • Private Healthcare',
                   style: TextStyle(
+                    fontFamily: 'K2D',
                     fontSize: 12,
                     color: Colors.white70,
                   ),
@@ -341,7 +357,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: Colors.white),
+            icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: _resetConversation,
             tooltip: 'New Consultation',
           ),
@@ -349,26 +365,32 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
-          // Messages list
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: EdgeInsets.all(16),
-              itemCount: _messages.length + (_isTyping ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == _messages.length && _isTyping) {
-                  return TypingIndicator();
-                }
-                return ChatBubble(message: _messages[index]);
-              },
+            child: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/chat_bg.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16),
+                itemCount: _messages.length + (_isTyping ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == _messages.length && _isTyping) {
+                    return const TypingIndicator();
+                  }
+                  return ChatBubble(message: _messages[index]);
+                },
+              ),
             ),
           ),
-          // Suggested replies
+
           if (_messages.isNotEmpty &&
               !_messages.last.isUser &&
               !_isTyping)
             _buildSuggestedReplies(),
-          // Input area
           _buildInputArea(),
         ],
       ),
@@ -378,8 +400,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildSuggestedReplies() {
     ConversationNode currentNode =
-        _conversationTree.getNode(_conversationTree.currentNodeId);
-    
+    _conversationTree.getNode(_conversationTree.currentNodeId);
+
     if (currentNode.suggestedReplies.isEmpty) return SizedBox.shrink();
 
     return Container(
@@ -388,10 +410,11 @@ class _ChatScreenState extends State<ChatScreen> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: currentNode.suggestedReplies
-              .map((reply) => SymptomChip(
-                    label: reply,
-                    onTap: () => _addUserMessage(reply),
-                  ))
+              .map((reply) =>
+              SymptomChip(
+                label: reply,
+                onTap: () => _addUserMessage(reply),
+              ))
               .toList(),
         ),
       ),
@@ -400,13 +423,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildInputArea() {
     return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
-            blurRadius: 4,
+            blurRadius: 6,
             offset: Offset(0, -2),
           ),
         ],
@@ -416,15 +439,22 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: TextField(
               controller: _messageController,
+              style: const TextStyle(
+                fontFamily: 'K2D',
+              ),
               decoration: InputDecoration(
                 hintText: 'Describe your symptoms...',
+                hintStyle: const TextStyle(
+                  fontFamily: 'K2D',
+                  color: Color(0xFF9E9E9E),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Colors.grey[100],
-                contentPadding: EdgeInsets.symmetric(
+                fillColor: const Color(0xFFF5F7F8),
+                contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 12,
                 ),
@@ -432,14 +462,21 @@ class _ChatScreenState extends State<ChatScreen> {
               onSubmitted: (_) => _sendMessage(),
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Container(
-            decoration: BoxDecoration(
-              color: Color(0xFF2196F3),
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF2E7C9A),
+                  Color(0xFF6FBFCC),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
             child: IconButton(
-              icon: Icon(Icons.send, color: Colors.white),
+              icon: const Icon(Icons.send, color: Colors.white),
               onPressed: _sendMessage,
             ),
           ),
@@ -452,38 +489,34 @@ class _ChatScreenState extends State<ChatScreen> {
     return BottomNavigationBar(
       currentIndex: _currentIndex,
       onTap: (index) {
-        setState(() {
-          _currentIndex = index;
-        });
-        
+        setState(() => _currentIndex = index);
         switch (index) {
-          case 0:
-            // Already on chat screen
-            break;
           case 1:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MedicalInsightsScreen()),
+              MaterialPageRoute(builder: (_) => MedicalInsightsScreen()),
             );
             break;
           case 2:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HistoryScreen()),
+              MaterialPageRoute(builder: (_) => HistoryScreen()),
             );
             break;
           case 3:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ProfileScreen()),
+              MaterialPageRoute(builder: (_) => ProfileScreen()),
             );
             break;
         }
       },
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: Color(0xFF2196F3),
-      unselectedItemColor: Colors.grey,
-      items: [
+      selectedItemColor: const Color(0xFF2E7C9A),
+      unselectedItemColor: const Color(0xFF9E9E9E),
+      selectedLabelStyle: const TextStyle(fontFamily: 'K2D'),
+      unselectedLabelStyle: const TextStyle(fontFamily: 'K2D'),
+      items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.chat),
           label: 'Chat',

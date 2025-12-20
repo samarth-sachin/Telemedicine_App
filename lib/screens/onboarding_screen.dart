@@ -13,47 +13,45 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
+  // Splash / logo colors
+  static const Color primaryColor = Color(0xFF2E7C9A);
+  static const Color secondaryColor = Color(0xFF6FBFCC);
+
   final List<OnboardingPage> _pages = [
     OnboardingPage(
       icon: Icons.offline_bolt,
       title: 'Completely Offline',
       description:
-          'No internet needed! TeleMedi works entirely offline, making healthcare accessible anywhere.',
-      color: Color(0xFF2196F3),
+      'No internet needed. TeleMedi works entirely offline, making healthcare accessible anywhere.',
     ),
     OnboardingPage(
       icon: Icons.psychology,
       title: 'Smart Health Guidance',
       description:
-          'Get instant medical advice based on your symptoms using intelligent conversation trees.',
-      color: Color(0xFF4CAF50),
+      'Get instant medical guidance based on symptoms using structured medical flows.',
     ),
     OnboardingPage(
       icon: Icons.history,
       title: 'Track Your Health',
       description:
-          'Keep a record of all consultations and track symptom patterns over time.',
-      color: Color(0xFFFF9800),
+      'Maintain a record of consultations and track symptom patterns over time.',
     ),
     OnboardingPage(
       icon: Icons.security,
       title: 'Privacy First',
       description:
-          'All your health data stays on your device. No AI, no cloud, complete privacy.',
-      color: Color(0xFF9C27B0),
+      'All your health data stays on your device. No cloud. No tracking.',
     ),
   ];
 
   void _onPageChanged(int page) {
-    setState(() {
-      _currentPage = page;
-    });
+    setState(() => _currentPage = page);
   }
 
   void _nextPage() {
     if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     } else {
@@ -83,27 +81,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // same as splash
       body: SafeArea(
         child: Column(
           children: [
-            // Skip button
+            // Skip button (logo theme)
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: Align(
                 alignment: Alignment.topRight,
                 child: TextButton(
                   onPressed: _skipOnboarding,
-                  child: Text(
+                  child: const Text(
                     'Skip',
                     style: TextStyle(
+                      fontFamily: 'K2D',
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: primaryColor,
                     ),
                   ),
                 ),
               ),
             ),
-            // PageView
+
+            // Pages
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
@@ -114,25 +115,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
             ),
-            // Page indicators
+
+            // Page indicators (logo color)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
                 _pages.length,
-                (index) => _buildPageIndicator(index),
+                    (index) => _buildPageIndicator(index),
               ),
             ),
-            SizedBox(height: 30),
-            // Next/Get Started button
+
+            const SizedBox(height: 32),
+
+            // Next / Get Started button (logo color)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
                   onPressed: _nextPage,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _pages[_currentPage].color,
+                    backgroundColor: primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -142,16 +146,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _currentPage == _pages.length - 1
                         ? 'Get Started'
                         : 'Next',
-                    style: TextStyle(
+                    style: const TextStyle(
+                      fontFamily: 'K2D',
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 40),
+
+            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -160,42 +166,48 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildPageContent(OnboardingPage page) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Icon
+          // Icon container (UNCHANGED icon logic)
           Container(
-            padding: EdgeInsets.all(40),
+            padding: const EdgeInsets.all(36),
             decoration: BoxDecoration(
-              color: page.color.withOpacity(0.1),
+              color: primaryColor.withOpacity(0.08),
               shape: BoxShape.circle,
             ),
             child: Icon(
               page.icon,
-              size: 100,
-              color: page.color,
+              size: 96,
+              color: primaryColor, // icon stays consistent
             ),
           ),
-          SizedBox(height: 50),
-          // Title
+
+          const SizedBox(height: 48),
+
+          // Title (subtle, professional)
           Text(
             page.title,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
+              fontFamily: 'K2D',
               fontSize: 28,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
               color: Colors.black87,
             ),
           ),
-          SizedBox(height: 20),
-          // Description
+
+          const SizedBox(height: 18),
+
+          // Description (safe non-null grey)
           Text(
             page.description,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
+              fontFamily: 'K2D',
               fontSize: 16,
-              color: Colors.grey[600],
+              color: Color(0xFF757575),
               height: 1.5,
             ),
           ),
@@ -205,15 +217,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildPageIndicator(int index) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 4),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       width: _currentPage == index ? 24 : 8,
       height: 8,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
         color: _currentPage == index
-            ? _pages[_currentPage].color
-            : Colors.grey[300],
+            ? primaryColor
+            : const Color(0xFFE0E0E0),
       ),
     );
   }
@@ -223,12 +236,10 @@ class OnboardingPage {
   final IconData icon;
   final String title;
   final String description;
-  final Color color;
 
   OnboardingPage({
     required this.icon,
     required this.title,
     required this.description,
-    required this.color,
   });
 }

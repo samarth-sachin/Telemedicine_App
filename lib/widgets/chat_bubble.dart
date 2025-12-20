@@ -5,25 +5,33 @@ class ChatBubble extends StatelessWidget {
   final ChatMessage message;
   const ChatBubble({super.key, required this.message});
 
+  static const Color primaryColor = Color(0xFF2E7C9A);
+  static const Color userBubbleColor = Color(0xFFEAF4F6);
+
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment:
+      message.isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          color: message.isUser ? Colors.grey[300] : Color(0xFF2196F3),
+          color: message.isUser ? userBubbleColor : primaryColor,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-            bottomLeft: message.isUser ? Radius.circular(16) : Radius.circular(4),
-            bottomRight: message.isUser ? Radius.circular(4) : Radius.circular(16),
+            topLeft: const Radius.circular(16),
+            topRight: const Radius.circular(16),
+            bottomLeft: message.isUser
+                ? const Radius.circular(16)
+                : const Radius.circular(4),
+            bottomRight: message.isUser
+                ? const Radius.circular(4)
+                : const Radius.circular(16),
           ),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 4,
@@ -34,22 +42,32 @@ class ChatBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Message text
             Text(
               message.text,
               style: TextStyle(
-                color: message.isUser ? Colors.black87 : Colors.white,
+                fontFamily: 'K2D',
+                color:
+                message.isUser ? Colors.black87 : Colors.white,
                 fontSize: 15,
-                height: 1.4,
+                height: 1.45,
               ),
             ),
-            SizedBox(height: 4),
-            Text(
-              _formatTime(message.timestamp),
-              style: TextStyle(
-                color: message.isUser
-                    ? Colors.grey[600]
-                    : Colors.white.withOpacity(0.7),
-                fontSize: 11,
+
+            const SizedBox(height: 6),
+
+            // Timestamp
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                _formatTime(message.timestamp),
+                style: TextStyle(
+                  fontFamily: 'K2D',
+                  fontSize: 11,
+                  color: message.isUser
+                      ? const Color(0xFF757575)
+                      : Colors.white.withOpacity(0.7),
+                ),
               ),
             ),
           ],
@@ -59,8 +77,8 @@ class ChatBubble extends StatelessWidget {
   }
 
   String _formatTime(DateTime time) {
-    String hour = time.hour.toString().padLeft(2, '0');
-    String minute = time.minute.toString().padLeft(2, '0');
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
   }
 }

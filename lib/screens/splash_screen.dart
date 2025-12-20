@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'onboarding_screen.dart';
-import 'chat_screen.dart';
-import '../storage/preferences_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,46 +11,48 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
+
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
-    _setupAnimations();
-    _navigateToNextScreen();
-  }
 
-  void _setupAnimations() {
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
       vsync: this,
+      duration: const Duration(seconds: 2),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
     );
 
     _controller.forward();
-  }
 
-  Future<void> _navigateToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 3));
-    if (!mounted) return;
+    Future.delayed(const Duration(seconds: 5), () {
+      if (!mounted) return;
 
-    bool isFirstTime = PreferencesManager.isFirstLaunch();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => isFirstTime
-            ? const OnboardingScreen()
-            : const ChatScreen(),
-      ),
-    );
+      _controller.reverse(); // fade OUT splash
+
+      Future.delayed(const Duration(milliseconds: 600), () {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 600),
+            pageBuilder: (context, animation, secondaryAnimation) =>
+            const OnboardingScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          ),
+        );
+      });
+    });
   }
 
   @override
@@ -64,73 +64,48 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF2196F3),
-              Color(0xFF1976D2),
-              Color(0xFF0D47A1),
-            ],
-          ),
-        ),
-        child: Center(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Heart Icon with pulse effect
-                  Container(
-                    padding: EdgeInsets.all(30),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.favorite,
-                      size: 100,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 30),
-                  // App Name
-                  Text(
-                    'TeleMedi',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  // Tagline
-                  Text(
-                    'Your Offline Health Companion',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white.withOpacity(0.9),
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                  SizedBox(height: 50),
-                  // Loading indicator
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 3,
-                    ),
-                  ),
-                ],
+      backgroundColor: Colors.white,
+      body: Center(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+
+              // LOGO
+              Image.asset(
+                'assets/images/app_logo.png',
+                height: 190,
               ),
-            ),
+
+              const SizedBox(height: 36),
+
+              // APP NAME
+              const Text(
+                'TeleMedi',
+                style: TextStyle(
+                  fontFamily: 'K2D',
+                  fontSize: 38,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2E7C9A),
+                  letterSpacing: 0.8,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // TAGLINE
+              const Text(
+                'Your Online Health Companion',
+                style: TextStyle(
+                  fontFamily: 'K2D',
+                  fontSize: 17,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF6FBFCC),
+                  letterSpacing: 0.4,
+                ),
+              ),
+            ],
           ),
         ),
       ),
