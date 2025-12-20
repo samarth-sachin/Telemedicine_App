@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
 
               // TAGLINE
               const Text(
-                'Your Online Health Companion',
+                'Your Offline Health Companion',
                 style: TextStyle(
                   fontFamily: 'K2D',
                   fontSize: 17,
