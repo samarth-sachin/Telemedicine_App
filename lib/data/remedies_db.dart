@@ -15,8 +15,9 @@ class RemediesDatabase {
         '🌡️ Monitor temperature every 4-6 hours',
       ],
       medications: [
-        'Paracetamol 500mg (after consulting pharmacist)',
-        'Take with food',
+        '💊 Dolo 650 or Crocin 500mg',
+        '💊 Take 1 tablet every 6-8 hours',
+        '💊 Maximum 3 tablets per day',
       ],
       warnings: [
         '⚠️ If fever exceeds 102°F, consult doctor',
@@ -38,8 +39,9 @@ class RemediesDatabase {
         '💪 Avoid physical exertion',
       ],
       medications: [
-        'Paracetamol for fever and pain',
-        'Vitamin C supplements',
+        '💊 Dolo 650 - 1 tablet every 8 hours',
+        '💊 Limcee (Vitamin C) 500mg - Once daily',
+        '💊 Combiflam if body ache is severe',
       ],
       warnings: [
         '⚠️ High fever (103°F+) - immediate doctor consultation',
@@ -82,8 +84,9 @@ class RemediesDatabase {
         '🌙 Ensure proper lighting in room',
       ],
       medications: [
-        'Usually no medication needed',
-        'If severe: Mild pain reliever after consulting pharmacist',
+        '💊 Usually no medication needed',
+        '💊 If severe: Paracetamol 500mg',
+        '💊 Eye drops if eyes are dry (consult pharmacist)',
       ],
       warnings: [
         '⚠️ If headache persists despite rest, consult eye specialist',
@@ -104,7 +107,8 @@ class RemediesDatabase {
         '🚶 Light walk in fresh air',
       ],
       medications: [
-        'Paracetamol or Ibuprofen (if needed)',
+        '💊 Paracetamol 500mg or Combiflam',
+        '💊 Saridon for quick relief',
       ],
       warnings: [
         '⚠️ Avoid stress triggers',
@@ -149,8 +153,9 @@ class RemediesDatabase {
         '😷 Avoid cold drinks and ice cream',
       ],
       medications: [
-        'Cough suppressant syrup (consult pharmacist)',
-        'Throat lozenges',
+        '💊 Benadryl Cough Syrup - 10ml 3 times daily',
+        '💊 Strepsils or Vicks lozenges',
+        '💊 Avoid cough suppressants if mucus present',
       ],
       warnings: [
         '⚠️ If cough persists beyond 2 weeks, see doctor',
@@ -171,8 +176,9 @@ class RemediesDatabase {
         '🤧 Proper expectoration (don\'t suppress)',
       ],
       medications: [
-        'Expectorant cough syrup',
-        'Avoid cough suppressants',
+        '💊 Ascoril Expectorant - 10ml 3 times daily',
+        '💊 Mucolite syrup for thick mucus',
+        '💊 Avoid Benadryl (cough suppressant)',
       ],
       warnings: [
         '⚠️ If mucus is yellow/green for >3 days, see doctor',
@@ -194,8 +200,9 @@ class RemediesDatabase {
         '🚫 Avoid spicy and oily foods',
       ],
       medications: [
-        'Antacid (if needed)',
-        'Digestive enzymes',
+        '💊 Digene or ENO - When needed',
+        '💊 Gasex tablets - 2 tablets after meals',
+        '💊 Pudinhara (digestive)',
       ],
       warnings: [
         '⚠️ If severe pain persists, consult doctor',
@@ -217,8 +224,9 @@ class RemediesDatabase {
         '☕ Avoid coffee and tea on empty stomach',
       ],
       medications: [
-        'Antacid tablets or syrup',
-        'Proton pump inhibitors (if prescribed)',
+        '💊 ENO or Gelusil - Immediate relief',
+        '💊 Pan 40 (Pantoprazole) - Empty stomach',
+        '💊 Ranitidine 150mg - Before bed',
       ],
       warnings: [
         '⚠️ If occurs frequently, consult gastroenterologist',
@@ -240,8 +248,9 @@ class RemediesDatabase {
         '🧊 Ice pack for specific sore areas',
       ],
       medications: [
-        'Mild pain reliever if needed',
-        'Pain relief ointment/balm',
+        '💊 Combiflam - 1 tablet twice daily',
+        '💊 Volini or Moov gel for external application',
+        '💊 Muscle relaxant if prescribed by doctor',
       ],
       warnings: [
         '⚠️ If pain severe or persistent, consult doctor',
@@ -262,14 +271,176 @@ class RemediesDatabase {
         '🧊 Cold sponging if fever present',
       ],
       medications: [
-        'Paracetamol for fever and pain',
-        'Multivitamin supplements',
+        '💊 Dolo 650 - Every 8 hours',
+        '💊 Becosules (B-Complex) - Once daily',
+        '💊 Limcee (Vitamin C) 500mg',
       ],
       warnings: [
         '⚠️ If symptoms worsen, consult doctor',
         '⚠️ Monitor for dengue/viral fever symptoms',
       ],
       requiresDoctorVisit: false,
+    ),
+    // Additional Fever Remedies
+    'fever_cough_remedy': Remedy(
+      id: 'fever_cough_remedy',
+      title: 'Fever with Cough',
+      description: 'Respiratory infection with fever and cough.',
+      category: 'Fever',
+      homeRemedies: [
+        '💧 Drink warm fluids',
+        '💨 Steam inhalation',
+        '🍯 Honey and ginger tea',
+        '🛏️ Complete bed rest',
+      ],
+      medications: [
+        '💊 Dolo 650',
+        '💊 Ascoril LS Syrup',
+      ],
+      warnings: ['If fever persists, see doctor'],
+    ),
+    'fever_headache_remedy': Remedy(
+      id: 'fever_headache_remedy',
+      title: 'Fever with Headache',
+      description: 'Flu-like symptoms.',
+      category: 'Fever',
+      homeRemedies: [
+        '💧 Stay hydrated',
+        '😴 Rest in dark room',
+        '🧊 Cold compress',
+      ],
+      medications: ['Paracetamol'],
+    ),
+    // Additional Headache Remedies
+    'headache_fever_remedy': Remedy(
+      id: 'headache_fever_remedy',
+      title: 'Headache with Fever',
+      description: 'Infection-related headache.',
+      category: 'Headache',
+      homeRemedies: [
+        '😴 Rest',
+        '🧊 Apply cold compress',
+        '💧 Drink fluids',
+      ],
+      medications: ['Paracetamol'],
+    ),
+    'headache_severe_remedy': Remedy(
+      id: 'headache_severe_remedy',
+      title: 'Severe Headache',
+      description: 'Intense headache requiring attention.',
+      category: 'Headache',
+      homeRemedies: [
+        '🌙 Dark, quiet room',
+        '🧊 Ice pack',
+        '😴 Sleep',
+      ],
+      medications: [
+        '💊 Brufen 400mg or Combiflam',
+        '💊 Consult doctor if very severe',
+      ],
+      requiresDoctorVisit: true,
+    ),
+    // Additional Cough Remedies
+    'cough_persistent_remedy': Remedy(
+      id: 'cough_persistent_remedy',
+      title: 'Persistent Dry Cough',
+      description: 'Long-lasting cough.',
+      category: 'Cough',
+      homeRemedies: [
+        '🍯 Honey with warm water',
+        '💨 Steam inhalation',
+        '🍵 Herbal tea',
+      ],
+      medications: [
+        '💊 Benadryl Cough Syrup',
+        '💊 Consider doctor visit if >2 weeks',
+      ],
+      warnings: ['See doctor if persists'],
+    ),
+    'cough_infection_remedy': Remedy(
+      id: 'cough_infection_remedy',
+      title: 'Cough with Fever',
+      description: 'Respiratory infection.',
+      category: 'Cough',
+      homeRemedies: [
+        '💧 Warm fluids',
+        '🛏️ Rest',
+        '💨 Steam',
+      ],
+      medications: [
+        '💊 Azithromycin 500mg (if doctor prescribes)',
+        '💊 Ascoril LS or Cheston Cold',
+      ],
+    ),
+    'cough_severe_remedy': Remedy(
+      id: 'cough_severe_remedy',
+      title: 'Severe Cough with Breathing Difficulty',
+      description: 'Urgent medical attention needed.',
+      category: 'Cough',
+      homeRemedies: [
+        '🚨 SEEK IMMEDIATE MEDICAL HELP',
+        '💧 Stay calm and hydrated',
+      ],
+      requiresDoctorVisit: true,
+    ),
+    // Additional Stomach Remedies
+    'stomach_general_remedy': Remedy(
+      id: 'stomach_general_remedy',
+      title: 'General Stomach Discomfort',
+      description: 'Mild stomach issues.',
+      category: 'Stomach',
+      homeRemedies: [
+        '🍵 Ginger tea',
+        '🚶 Light walk',
+        '🥣 Light meals',
+      ],
+    ),
+    'stomach_cramps_remedy': Remedy(
+      id: 'stomach_cramps_remedy',
+      title: 'Stomach Cramps',
+      description: 'Abdominal cramps.',
+      category: 'Stomach',
+      homeRemedies: [
+        '🔥 Hot water bottle',
+        '🍵 Chamomile tea',
+        '💆 Gentle massage',
+      ],
+    ),
+    'stomach_bloating_remedy': Remedy(
+      id: 'stomach_bloating_remedy',
+      title: 'Bloating and Gas',
+      description: 'Digestive discomfort.',
+      category: 'Stomach',
+      homeRemedies: [
+        '🚶 Walk after meals',
+        '🥄 Ajwain water',
+        '🍵 Peppermint tea',
+      ],
+    ),
+    'stomach_constipation_remedy': Remedy(
+      id: 'stomach_constipation_remedy',
+      title: 'Constipation',
+      description: 'Difficulty in bowel movements.',
+      category: 'Stomach',
+      homeRemedies: [
+        '💧 Drink more water',
+        '🥗 Fiber-rich diet',
+        '🚶 Regular exercise',
+        '🍌 Eat fruits',
+      ],
+    ),
+    // Additional Body Ache Remedy
+    'bodyache_weakness_remedy': Remedy(
+      id: 'bodyache_weakness_remedy',
+      title: 'Body Ache with Weakness',
+      description: 'Fatigue and body pain.',
+      category: 'Body Ache',
+      homeRemedies: [
+        '😴 Adequate rest',
+        '🥗 Nutritious diet',
+        '💊 Vitamin supplements',
+        '💧 Stay hydrated',
+      ],
     ),
   };
 

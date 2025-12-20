@@ -33,6 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
   int _currentIndex = 0;
   List<String> _detectedSymptoms = [];
   String? _currentRemedyId;
+  String? _pendingSymptomConfirmation;
 
   @override
   void initState() {
@@ -86,46 +87,66 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _processUserInput(String input) {
     Future.delayed(Duration(milliseconds: 800), () {
-      // First try exact match with Trie
-      String? trieResult = _medicalTrie.search(input.toLowerCase());
-
-      if (trieResult != null) {
-        _conversationTree.currentNodeId = trieResult;
-        _moveToNextNode();
-        return;
+      // 0. Handle Pending Confirmation
+      if (_pendingSymptomConfirmation != null) {
+        if (input.toLowerCase().contains('yes')) {
+          String symptom = _pendingSymptomConfirmation!;
+          _pendingSymptomConfirmation = null;
+          String? trieResult = _medicalTrie.search(symptom);
+          if (trieResult != null) {
+            _conversationTree.currentNodeId = trieResult;
+            _moveToNextNode();
+            return;
+          }
+        } else {
+          _pendingSymptomConfirmation = null;
+          setState(() {
+            _isTyping = false;
+          });
+          _addBotMessage('Okay, please describe your symptoms differently.');
+          return;
+        }
       }
 
-      // Try to find next node based on current conversation
+      // 1. Priority: Check Contextual Transitions first
       String? nextNodeId = _conversationTree.findNextNode(input);
-
       if (nextNodeId != null) {
         _conversationTree.currentNodeId = nextNodeId;
         _moveToNextNode();
         return;
       }
 
-      // Use Levenshtein distance for fuzzy matching
+      // 2. Secondary: Check Global Keywords (Trie)
+      String? trieResult = _medicalTrie.search(input.toLowerCase());
+      if (trieResult != null) {
+        _conversationTree.currentNodeId = trieResult;
+        _moveToNextNode();
+        return;
+      }
+
+      // 3. Fallback: Levenshtein
       List<String> allSymptoms = [
         'fever',
         'headache',
         'cough',
-        'stomach pain',
+        'stomach',
         'body ache',
         'cold'
       ];
-
+      
       String closestMatch = LevenshteinDistance.findClosestMatch(
         input.toLowerCase(),
         allSymptoms,
       );
 
       if (closestMatch.isNotEmpty) {
+        _pendingSymptomConfirmation = closestMatch;
         setState(() {
           _isTyping = false;
         });
         _addBotMessage(
           'Did you mean "$closestMatch"?',
-          ['Yes', 'No, something else'],
+          ['Yes', 'No'],
         );
       } else {
         setState(() {
@@ -141,7 +162,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _moveToNextNode() {
     ConversationNode node =
-    _conversationTree.getNode(_conversationTree.currentNodeId);
+        _conversationTree.getNode(_conversationTree.currentNodeId);
+    
+    // Track Symptom
+    if (node.onEnterSymptom != null) {
+       if (!_detectedSymptoms.contains(node.onEnterSymptom)) {
+          _detectedSymptoms.add(node.onEnterSymptom!);
+       }
+    }
+
     setState(() {
       _isTyping = false;
     });
@@ -253,6 +282,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.clear();
       _detectedSymptoms.clear();
       _currentRemedyId = null;
+      _pendingSymptomConfirmation = null;
       _conversationTree.reset();
     });
     _sendInitialMessage();
@@ -274,16 +304,33 @@ class _ChatScreenState extends State<ChatScreen> {
     String message = _messageController.text.trim();
     if (message.isEmpty) return;
 
+    String lowerMessage = message.toLowerCase();
+
     // Handle special commands
-    if (message.toLowerCase() == 'yes, save it') {
+    if (lowerMessage == 'yes, save it' || lowerMessage == 'yes') {
       _saveConsultation();
       _messageController.clear();
       return;
     }
 
-    if (message.toLowerCase() == 'start new consultation' ||
-        message.toLowerCase() == 'no, thanks') {
+    if (lowerMessage == 'start new consultation') {
       _resetConversation();
+      _messageController.clear();
+      return;
+    }
+
+    if (lowerMessage == 'no, thanks' || lowerMessage == 'no') {
+      // User doesn't want to save, just reset
+      _resetConversation();
+      _messageController.clear();
+      return;
+    }
+
+    if (lowerMessage == 'view history') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => HistoryScreen()),
+      );
       _messageController.clear();
       return;
     }

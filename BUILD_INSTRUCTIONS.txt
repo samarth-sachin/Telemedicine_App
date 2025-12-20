@@ -1,0 +1,5 @@
+// IMPORTANT: Run this command to generate the Hive adapters:
+// dart run build_runner build --delete-conflicting-outputs
+
+// This file contains instructions for generating type adapters for Hive storage.
+// After making changes to @HiveType classes, run the build_runner command above.

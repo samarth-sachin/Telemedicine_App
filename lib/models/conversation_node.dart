@@ -7,6 +7,7 @@ class ConversationNode {
   final bool isTerminal;
   final List<String> followUpQuestions;
   final String? severity;
+  final String? onEnterSymptom;
 
   ConversationNode({
     required this.id,
@@ -17,6 +18,7 @@ class ConversationNode {
     this.isTerminal = false,
     this.followUpQuestions = const [],
     this.severity,
+    this.onEnterSymptom,
   });
 
   ConversationNode copyWith({
@@ -28,6 +30,7 @@ class ConversationNode {
     bool? isTerminal,
     List<String>? followUpQuestions,
     String? severity,
+    String? onEnterSymptom,
   }) {
     return ConversationNode(
       id: id ?? this.id,
@@ -38,6 +41,7 @@ class ConversationNode {
       isTerminal: isTerminal ?? this.isTerminal,
       followUpQuestions: followUpQuestions ?? this.followUpQuestions,
       severity: severity ?? this.severity,
+      onEnterSymptom: onEnterSymptom ?? this.onEnterSymptom,
     );
   }
 }

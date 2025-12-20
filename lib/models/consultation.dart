@@ -1,30 +1,31 @@
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'chat_message.dart';
 
 part 'consultation.g.dart';
 
 @HiveType(typeId: 1)
-class Consultation extends HiveObject {
+class Consultation {
   @HiveField(0)
-  String id;
-
+  final String id;
+  
   @HiveField(1)
-  DateTime timestamp;
-
+  final DateTime timestamp;
+  
   @HiveField(2)
-  List<String> symptoms;
-
+  final List<String> symptoms;
+  
   @HiveField(3)
-  String remedy;
-
+  final String remedy;
+  
   @HiveField(4)
-  List<ChatMessage> messages;
-
+  final List<ChatMessage> messages;
+  
   @HiveField(5)
-  String consultationSummary;
-
+  final String consultationSummary;
+  
   @HiveField(6)
-  String severity; // 'mild', 'moderate', 'severe'
+  final String severity;
 
   Consultation({
     required this.id,
@@ -32,20 +33,41 @@ class Consultation extends HiveObject {
     required this.symptoms,
     required this.remedy,
     required this.messages,
-    this.consultationSummary = '',
-    this.severity = 'mild',
+    required this.consultationSummary,
+    required this.severity,
   });
 
   String getFormattedDate() {
-    final day = timestamp.day.toString().padLeft(2, '0');
-    final month = timestamp.month.toString().padLeft(2, '0');
-    final year = timestamp.year;
-    return '$day/$month/$year';
+    return DateFormat('MMM dd, yyyy').format(timestamp);
   }
 
   String getFormattedTime() {
-    final hour = timestamp.hour.toString().padLeft(2, '0');
-    final minute = timestamp.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
+    return DateFormat('hh:mm a').format(timestamp);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'timestamp': timestamp.toIso8601String(),
+      'symptoms': symptoms,
+      'remedy': remedy,
+      'messages': messages.map((m) => m.toJson()).toList(),
+      'consultationSummary': consultationSummary,
+      'severity': severity,
+    };
+  }
+
+  factory Consultation.fromJson(Map<String, dynamic> json) {
+    return Consultation(
+      id: json['id'] as String,
+      timestamp: DateTime.parse(json['timestamp'] as String),
+      symptoms: List<String>.from(json['symptoms'] as List),
+      remedy: json['remedy'] as String,
+      messages: (json['messages'] as List)
+          .map((m) => ChatMessage.fromJson(m as Map<String, dynamic>))
+          .toList(),
+      consultationSummary: json['consultationSummary'] as String,
+      severity: json['severity'] as String,
+    );
   }
 }

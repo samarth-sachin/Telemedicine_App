@@ -3,24 +3,24 @@ import 'package:hive/hive.dart';
 part 'chat_message.g.dart';
 
 @HiveType(typeId: 0)
-class ChatMessage extends HiveObject {
+class ChatMessage {
   @HiveField(0)
-  String text;
-
+  final String text;
+  
   @HiveField(1)
-  bool isUser;
-
+  final bool isUser;
+  
   @HiveField(2)
-  DateTime timestamp;
-
+  final DateTime timestamp;
+  
   @HiveField(3)
-  String? messageType; // 'text', 'remedy', 'suggestion'
+  final String? messageType;
 
   ChatMessage({
     required this.text,
     required this.isUser,
     required this.timestamp,
-    this.messageType = 'text',
+    this.messageType,
   });
 
   Map<String, dynamic> toJson() {
@@ -34,10 +34,10 @@ class ChatMessage extends HiveObject {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
-      text: json['text'],
-      isUser: json['isUser'],
-      timestamp: DateTime.parse(json['timestamp']),
-      messageType: json['messageType'] ?? 'text',
+      text: json['text'] as String,
+      isUser: json['isUser'] as bool,
+      timestamp: DateTime.parse(json['timestamp'] as String),
+      messageType: json['messageType'] as String?,
     );
   }
 }

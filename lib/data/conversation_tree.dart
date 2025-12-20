@@ -44,6 +44,7 @@ class ConversationTree {
           '3': 'fever_duration_long',
           'more': 'fever_duration_long',
         },
+        onEnterSymptom: 'Fever',
       ),
       'fever_duration_short': ConversationNode(
         id: 'fever_duration_short',
@@ -56,6 +57,23 @@ class ConversationTree {
           'just': 'fever_simple',
         },
       ),
+      'fever_duration_medium': ConversationNode(
+        id: 'fever_duration_medium',
+        botMessage: 'Fever for 1-3 days. Do you have other symptoms like cough, body ache, or throat pain?',
+        suggestedReplies: ['Yes, cough', 'Yes, body ache', 'No'],
+        transitions: {
+          'cough': 'fever_with_cough',
+          'body': 'fever_with_bodyache',
+          'no': 'fever_simple',
+        },
+      ),
+      'fever_with_cough': ConversationNode(
+        id: 'fever_with_cough',
+        botMessage: 'Fever with cough suggests respiratory infection. Here are some remedies.',
+        remedyId: 'fever_cough_remedy',
+        isTerminal: true,
+        severity: 'moderate',
+      ),
       'fever_simple': ConversationNode(
         id: 'fever_simple',
         botMessage: 'Got it. This seems like a simple fever. Let me suggest some remedies.',
@@ -67,6 +85,13 @@ class ConversationTree {
         id: 'fever_with_bodyache',
         botMessage: 'Fever with body ache could indicate viral infection. Here are some recommendations.',
         remedyId: 'fever_viral_remedy',
+        isTerminal: true,
+        severity: 'moderate',
+      ),
+      'fever_with_headache': ConversationNode(
+        id: 'fever_with_headache',
+        botMessage: 'Fever with headache. This could be flu or viral infection. Here are recommendations.',
+        remedyId: 'fever_headache_remedy',
         isTerminal: true,
         severity: 'moderate',
       ),
@@ -87,6 +112,7 @@ class ConversationTree {
           'moderate': 'headache_moderate',
           'severe': 'headache_severe',
         },
+        onEnterSymptom: 'Headache',
       ),
       'headache_mild': ConversationNode(
         id: 'headache_mild',
@@ -111,6 +137,24 @@ class ConversationTree {
         isTerminal: true,
         severity: 'mild',
       ),
+      'headache_moderate': ConversationNode(
+        id: 'headache_moderate',
+        botMessage: 'Moderate headache. Do you have any other symptoms like fever or neck stiffness?',
+        suggestedReplies: ['Yes, fever', 'Yes, neck stiffness', 'No'],
+        transitions: {
+          'fever': 'headache_with_fever',
+          'neck': 'headache_severe',
+          'stiffness': 'headache_severe',
+          'no': 'headache_tension',
+        },
+      ),
+      'headache_with_fever': ConversationNode(
+        id: 'headache_with_fever',
+        botMessage: 'Headache with fever could indicate infection. Here are some recommendations.',
+        remedyId: 'headache_fever_remedy',
+        isTerminal: true,
+        severity: 'moderate',
+      ),
       'headache_severe': ConversationNode(
         id: 'headache_severe',
         botMessage: 'Severe headache needs attention. Do you have nausea, vomiting or vision problems?',
@@ -119,6 +163,13 @@ class ConversationTree {
           'yes': 'headache_migraine',
           'no': 'headache_severe_simple',
         },
+      ),
+      'headache_severe_simple': ConversationNode(
+        id: 'headache_severe_simple',
+        botMessage: 'Severe headache without other symptoms. Here are some relief methods, but consider seeing a doctor.',
+        remedyId: 'headache_severe_remedy',
+        isTerminal: true,
+        severity: 'moderate',
       ),
       'headache_migraine': ConversationNode(
         id: 'headache_migraine',
@@ -137,6 +188,7 @@ class ConversationTree {
           'wet': 'cough_wet',
           'mucus': 'cough_wet',
         },
+        onEnterSymptom: 'Cough',
       ),
       'cough_dry': ConversationNode(
         id: 'cough_dry',
@@ -155,6 +207,13 @@ class ConversationTree {
         isTerminal: true,
         severity: 'mild',
       ),
+      'cough_dry_long': ConversationNode(
+        id: 'cough_dry_long',
+        botMessage: 'Persistent dry cough for over a week needs attention. Here are remedies, but consider seeing a doctor.',
+        remedyId: 'cough_persistent_remedy',
+        isTerminal: true,
+        severity: 'moderate',
+      ),
       'cough_wet': ConversationNode(
         id: 'cough_wet',
         botMessage: 'Wet cough with mucus. Do you have fever or difficulty breathing?',
@@ -162,8 +221,23 @@ class ConversationTree {
         transitions: {
           'fever': 'cough_wet_fever',
           'breathing': 'cough_severe',
+          'difficulty': 'cough_severe',
           'no': 'cough_wet_simple',
         },
+      ),
+      'cough_wet_fever': ConversationNode(
+        id: 'cough_wet_fever',
+        botMessage: 'Wet cough with fever suggests infection. Here are some recommendations.',
+        remedyId: 'cough_infection_remedy',
+        isTerminal: true,
+        severity: 'moderate',
+      ),
+      'cough_severe': ConversationNode(
+        id: 'cough_severe',
+        botMessage: 'Cough with breathing difficulty is serious. Please see a doctor immediately. Meanwhile, here are emergency tips.',
+        remedyId: 'cough_severe_remedy',
+        isTerminal: true,
+        severity: 'severe',
       ),
       'cough_wet_simple': ConversationNode(
         id: 'cough_wet_simple',
@@ -182,6 +256,7 @@ class ConversationTree {
           'lower': 'stomach_lower',
           'all': 'stomach_general',
         },
+        onEnterSymptom: 'Stomach Pain',
       ),
       'stomach_upper': ConversationNode(
         id: 'stomach_upper',
@@ -189,9 +264,50 @@ class ConversationTree {
         suggestedReplies: ['After eating', 'Burning sensation', 'Other'],
         transitions: {
           'eating': 'stomach_indigestion',
+          'after': 'stomach_indigestion',
           'burning': 'stomach_acidity',
+          'sensation': 'stomach_acidity',
           'other': 'stomach_general',
         },
+      ),
+      'stomach_lower': ConversationNode(
+        id: 'stomach_lower',
+        botMessage: 'Lower abdomen pain. Do you have cramps, bloating, or constipation?',
+        suggestedReplies: ['Cramps', 'Bloating', 'Constipation', 'Other'],
+        transitions: {
+          'cramp': 'stomach_cramps',
+          'bloat': 'stomach_bloating',
+          'constipation': 'stomach_constipation',
+          'other': 'stomach_general',
+        },
+      ),
+      'stomach_cramps': ConversationNode(
+        id: 'stomach_cramps',
+        botMessage: 'Stomach cramps. Here are some relief methods.',
+        remedyId: 'stomach_cramps_remedy',
+        isTerminal: true,
+        severity: 'mild',
+      ),
+      'stomach_bloating': ConversationNode(
+        id: 'stomach_bloating',
+        botMessage: 'Bloating and gas. Here are remedies to help.',
+        remedyId: 'stomach_bloating_remedy',
+        isTerminal: true,
+        severity: 'mild',
+      ),
+      'stomach_constipation': ConversationNode(
+        id: 'stomach_constipation',
+        botMessage: 'Constipation issue. Here are natural remedies.',
+        remedyId: 'stomach_constipation_remedy',
+        isTerminal: true,
+        severity: 'mild',
+      ),
+      'stomach_general': ConversationNode(
+        id: 'stomach_general',
+        botMessage: 'General stomach discomfort. Here are remedies that might help.',
+        remedyId: 'stomach_general_remedy',
+        isTerminal: true,
+        severity: 'mild',
       ),
       'stomach_indigestion': ConversationNode(
         id: 'stomach_indigestion',
@@ -218,11 +334,19 @@ class ConversationTree {
           'just': 'bodyache_simple',
           'no': 'bodyache_simple',
         },
+        onEnterSymptom: 'Body Ache',
       ),
       'bodyache_simple': ConversationNode(
         id: 'bodyache_simple',
         botMessage: 'Simple body ache, possibly from physical activity or stress. Here are remedies.',
         remedyId: 'bodyache_simple_remedy',
+        isTerminal: true,
+        severity: 'mild',
+      ),
+      'bodyache_weakness': ConversationNode(
+        id: 'bodyache_weakness',
+        botMessage: 'Body ache with weakness. This could be fatigue or vitamin deficiency. Here are suggestions.',
+        remedyId: 'bodyache_weakness_remedy',
         isTerminal: true,
         severity: 'mild',
       ),
