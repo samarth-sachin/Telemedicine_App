@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/remedies_db.dart';
 import '../models/conversation_node.dart';
+import '../theme/app_theme.dart';
 
 class MedicalInsightsScreen extends StatelessWidget {
   const MedicalInsightsScreen({super.key});
@@ -8,6 +9,7 @@ class MedicalInsightsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categories = ['Fever', 'Headache', 'Cough', 'Stomach', 'Body Ache'];
+
     final icons = {
       'Fever': Icons.thermostat,
       'Headache': Icons.psychology,
@@ -15,27 +17,32 @@ class MedicalInsightsScreen extends StatelessWidget {
       'Stomach': Icons.restaurant,
       'Body Ache': Icons.accessibility_new,
     };
+
     final colors = {
-      'Fever': Color(0xFFFF5252),
-      'Headache': Color(0xFF9C27B0),
-      'Cough': Color(0xFF2196F3),
-      'Stomach': Color(0xFFFF9800),
-      'Body Ache': Color(0xFF4CAF50),
+      'Fever': const Color(0xFFFF5252),
+      'Headache': const Color(0xFF9C27B0),
+      'Cough': const Color(0xFF2196F3),
+      'Stomach': const Color(0xFFFF9800),
+      'Body Ache': const Color(0xFF4CAF50),
     };
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xFF2196F3),
-        title: Text(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: AppTheme.primaryGradient,
+          ),
+        ),
+        title: const Text(
           'Medical Insights',
           style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+            fontFamily: 'K2D',
+            fontWeight: FontWeight.w600,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -44,16 +51,16 @@ class MedicalInsightsScreen extends StatelessWidget {
           // Header section
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Color(0xFF2196F3),
-              borderRadius: BorderRadius.only(
+              gradient: AppTheme.primaryGradient,
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(32),
                 bottomRight: Radius.circular(32),
               ),
             ),
             child: Column(
-              children: [
+              children: const [
                 Icon(
                   Icons.local_hospital,
                   size: 60,
@@ -63,6 +70,7 @@ class MedicalInsightsScreen extends StatelessWidget {
                 Text(
                   'Common Health Conditions',
                   style: TextStyle(
+                    fontFamily: 'K2D',
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -72,6 +80,7 @@ class MedicalInsightsScreen extends StatelessWidget {
                 Text(
                   'Quick reference guide for home remedies',
                   style: TextStyle(
+                    fontFamily: 'K2D',
                     fontSize: 14,
                     color: Colors.white70,
                   ),
@@ -79,13 +88,14 @@ class MedicalInsightsScreen extends StatelessWidget {
               ],
             ),
           ),
+
           // Conditions list
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               itemCount: categories.length,
               itemBuilder: (context, index) {
-                String category = categories[index];
+                final category = categories[index];
                 return _buildConditionCard(
                   context,
                   category,
@@ -101,14 +111,14 @@ class MedicalInsightsScreen extends StatelessWidget {
   }
 
   Widget _buildConditionCard(
-    BuildContext context,
-    String category,
-    IconData icon,
-    Color color,
-  ) {
+      BuildContext context,
+      String category,
+      IconData icon,
+      Color color,
+      ) {
     return Card(
       elevation: 2,
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -117,17 +127,17 @@ class MedicalInsightsScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CategoryDetailScreen(category: category),
+              builder: (_) => CategoryDetailScreen(category: category),
             ),
           );
         },
         borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
@@ -138,23 +148,25 @@ class MedicalInsightsScreen extends StatelessWidget {
                   color: color,
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       category,
-                      style: TextStyle(
+                      style: const TextStyle(
+                        fontFamily: 'K2D',
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       'Tap to view remedies and tips',
                       style: TextStyle(
+                        fontFamily: 'K2D',
                         fontSize: 14,
                         color: Colors.grey[600],
                       ),
@@ -181,54 +193,61 @@ class CategoryDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Remedy> remedies = RemediesDatabase.getRemediesByCategory(category);
+    final remedies = RemediesDatabase.getRemediesByCategory(category);
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xFF2196F3),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: AppTheme.primaryGradient,
+          ),
+        ),
         title: Text(
           category,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+          style: const TextStyle(
+            fontFamily: 'K2D',
+            fontWeight: FontWeight.w600,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: remedies.isEmpty
-          ? Center(
-              child: Text(
-                'No remedies available for this category',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            )
+          ? const Center(
+        child: Text(
+          'No remedies available for this category',
+          style: TextStyle(
+            fontFamily: 'K2D',
+            fontSize: 16,
+            color: Colors.grey,
+          ),
+        ),
+      )
           : ListView.builder(
-              padding: EdgeInsets.all(16),
-              itemCount: remedies.length,
-              itemBuilder: (context, index) {
-                return _buildRemedyCard(context, remedies[index]);
-              },
-            ),
+        padding: const EdgeInsets.all(16),
+        itemCount: remedies.length,
+        itemBuilder: (context, index) {
+          return _buildRemedyCard(remedies[index]);
+        },
+      ),
     );
   }
 
-  Widget _buildRemedyCard(BuildContext context, Remedy remedy) {
+  Widget _buildRemedyCard(Remedy remedy) {
     return Card(
       elevation: 2,
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title
             Row(
               children: [
                 Icon(
@@ -239,11 +258,12 @@ class CategoryDetailScreen extends StatelessWidget {
                       ? Colors.orange
                       : Colors.green,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     remedy.title,
-                    style: TextStyle(
+                    style: const TextStyle(
+                      fontFamily: 'K2D',
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -252,100 +272,16 @@ class CategoryDetailScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 12),
-            // Description
+            const SizedBox(height: 12),
             Text(
               remedy.description,
               style: TextStyle(
+                fontFamily: 'K2D',
                 fontSize: 14,
                 color: Colors.grey[700],
                 height: 1.5,
               ),
             ),
-            SizedBox(height: 16),
-            // Home Remedies
-            Text(
-              '🏠 Home Remedies:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: 8),
-            ...remedy.homeRemedies.map((r) => Padding(
-                  padding: EdgeInsets.only(bottom: 6),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('• ', style: TextStyle(fontSize: 16)),
-                      Expanded(
-                        child: Text(
-                          r,
-                          style: TextStyle(fontSize: 14, height: 1.4),
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
-            // Warnings
-            if (remedy.warnings.isNotEmpty) ...[
-              SizedBox(height: 16),
-              Text(
-                '⚠️ Important:',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange[800],
-                ),
-              ),
-              SizedBox(height: 8),
-              ...remedy.warnings.map((warning) => Padding(
-                    padding: EdgeInsets.only(bottom: 6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('• ', style: TextStyle(fontSize: 16)),
-                        Expanded(
-                          child: Text(
-                            warning,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.orange[800],
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
-            ],
-            // Doctor visit badge
-            if (remedy.requiresDoctorVisit) ...[
-              SizedBox(height: 16),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.red[50],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red[200]!),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.local_hospital, color: Colors.red, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'Doctor Consultation Recommended',
-                      style: TextStyle(
-                        color: Colors.red[800],
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ],
         ),
       ),

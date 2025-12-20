@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../storage/preferences_manager.dart';
 import '../storage/hive_manager.dart';
+import '../theme/app_theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,51 +14,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   String _selectedGender = 'Not specified';
-  Map<String, int> _symptomFrequency = {};
 
   @override
   void initState() {
     super.initState();
     _loadProfile();
-    _loadHealthStats();
   }
 
   void _loadProfile() {
-    setState(() {
-      _nameController.text = PreferencesManager.getUserName();
-      _ageController.text = PreferencesManager.getUserAge() > 0
-          ? PreferencesManager.getUserAge().toString()
-          : '';
-      _selectedGender = PreferencesManager.getUserGender();
-    });
-  }
-
-  void _loadHealthStats() {
-    setState(() {
-      _symptomFrequency = HiveManager.getSymptomFrequency();
-    });
+    _nameController.text = PreferencesManager.getUserName();
+    _ageController.text = PreferencesManager.getUserAge() > 0
+        ? PreferencesManager.getUserAge().toString()
+        : '';
+    _selectedGender = PreferencesManager.getUserGender();
   }
 
   Future<void> _saveProfile() async {
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter your name')),
+        const SnackBar(content: Text('Please enter your name')),
       );
       return;
     }
 
     await PreferencesManager.setUserName(_nameController.text.trim());
-    
-    int? age = int.tryParse(_ageController.text);
+    final age = int.tryParse(_ageController.text);
     if (age != null && age > 0) {
       await PreferencesManager.setUserAge(age);
     }
-    
     await PreferencesManager.setUserGender(_selectedGender);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Profile saved successfully'),
           backgroundColor: Colors.green,
         ),
@@ -66,123 +55,121 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
-  void dispose() {
-    _nameController.dispose();
-    _ageController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    int totalConsultations = HiveManager.getTotalConsultations();
-    List<String> recentSymptoms = HiveManager.getRecentSymptoms(days: 30);
+    final totalConsultations = HiveManager.getTotalConsultations();
+    final recentSymptoms = HiveManager.getRecentSymptoms(days: 30);
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xFF2196F3),
-        title: Text(
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppTheme.primaryGradient,
+          ),
+        ),
+        title: const Text(
           'Profile',
           style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+            fontFamily: 'K2D',
+            fontWeight: FontWeight.w600,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: ListView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         children: [
-          // Profile Card
+          // Profile card
           Card(
             elevation: 2,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
             child: Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
                   // Avatar
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Color(0xFF2196F3),
-                    child: Icon(
-                      Icons.person,
-                      size: 50,
-                      color: Colors.white,
+                  Container(
+                    width: 96,
+                    height: 96,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: AppTheme.primaryGradient,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Image.asset(
+                        'assets/images/profile.png',
+                        color: Colors.white,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 20),
-                  // Name field
-                  TextField(
+
+                  const SizedBox(height: 24),
+
+                  _buildTextField(
                     controller: _nameController,
-                    decoration: InputDecoration(
-                      labelText: 'Name',
-                      prefixIcon: Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    label: 'Name',
+                    icon: Icons.person_outline,
                   ),
-                  SizedBox(height: 16),
-                  // Age field
-                  TextField(
+
+                  const SizedBox(height: 16),
+
+                  _buildTextField(
                     controller: _ageController,
+                    label: 'Age',
+                    icon: Icons.cake_outlined,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Age',
-                      prefixIcon: Icon(Icons.cake_outlined),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
                   ),
-                  SizedBox(height: 16),
-                  // Gender dropdown
+
+                  const SizedBox(height: 16),
+
                   DropdownButtonFormField<String>(
                     value: _selectedGender,
-                    decoration: InputDecoration(
-                      labelText: 'Gender',
-                      prefixIcon: Icon(Icons.wc),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                    decoration: _inputDecoration(
+                      label: 'Gender',
+                      icon: Icons.wc,
                     ),
                     items: ['Male', 'Female', 'Other', 'Not specified']
-                        .map((gender) => DropdownMenuItem(
-                              value: gender,
-                              child: Text(gender),
-                            ))
+                        .map(
+                          (g) => DropdownMenuItem(
+                        value: g,
+                        child: Text(g, style: const TextStyle(fontFamily: 'K2D')),
+                      ),
+                    )
                         .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedGender = value!;
-                      });
-                    },
+                    onChanged: (v) => setState(() => _selectedGender = v!),
                   ),
-                  SizedBox(height: 20),
-                  // Save button
+
+                  const SizedBox(height: 24),
+
                   SizedBox(
                     width: double.infinity,
                     height: 48,
-                    child: ElevatedButton(
-                      onPressed: _saveProfile,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF2196F3),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: AppTheme.primaryGradient,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(
-                        'Save Profile',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      child: ElevatedButton(
+                        onPressed: _saveProfile,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                        ),
+                        child: const Text(
+                          'Save Profile',
+                          style: TextStyle(
+                            fontFamily: 'K2D',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -191,166 +178,184 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-          SizedBox(height: 24),
-          // Health Stats Section
-          Text(
-            'Health Statistics',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+
+          const SizedBox(height: 24),
+
+          _sectionTitle('Health Statistics'),
+
+          _statTile(
+            icon: Icons.medical_services,
+            title: 'Total Consultations',
+            value: '$totalConsultations',
           ),
-          SizedBox(height: 12),
-          // Total consultations
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: ListTile(
-              leading: Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(Icons.medical_services, color: Color(0xFF2196F3)),
-              ),
-              title: Text(
-                'Total Consultations',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              trailing: Text(
-                '$totalConsultations',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2196F3),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 12),
-          // Recent symptoms
+
           if (recentSymptoms.isNotEmpty) ...[
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.trending_up, color: Colors.orange),
-                        SizedBox(width: 8),
-                        Text(
-                          'Recent Symptoms (Last 30 Days)',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: recentSymptoms.take(10).map((symptom) {
-                        return Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.orange[50],
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.orange[200]!),
-                          ),
-                          child: Text(
-                            symptom,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.orange[800],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
+            const SizedBox(height: 12),
+            _recentSymptomsCard(recentSymptoms),
+          ],
+
+          const SizedBox(height: 24),
+
+          _sectionTitle('About TeleMedi'),
+
+          _aboutCard(),
+        ],
+      ),
+    );
+  }
+
+  // ---------- Widgets ----------
+
+  Widget _sectionTitle(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontFamily: 'K2D',
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _statTile({
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            gradient: AppTheme.primaryGradient,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: Colors.white),
+        ),
+        title: Text(title, style: const TextStyle(fontFamily: 'K2D')),
+        trailing: Text(
+          value,
+          style: const TextStyle(
+            fontFamily: 'K2D',
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _recentSymptomsCard(List<String> symptoms) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.trending_up, color: Colors.orange),
+                SizedBox(width: 8),
+                Text(
+                  'Recent Symptoms (Last 30 Days)',
+                  style: TextStyle(
+                    fontFamily: 'K2D',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: symptoms.take(10).map((s) {
+                return Container(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.orange[50],
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.orange[200]!),
+                  ),
+                  child: Text(
+                    s,
+                    style: TextStyle(
+                      fontFamily: 'K2D',
+                      fontSize: 12,
+                      color: Colors.orange[800],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _aboutCard() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: const [
+            Text(
+              'TeleMedi v1.0.0',
+              style: TextStyle(
+                fontFamily: 'K2D',
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Smart Healthcare. No Internet. No AI.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'K2D',
+                fontStyle: FontStyle.italic,
+                color: Colors.grey,
               ),
             ),
           ],
-          SizedBox(height: 24),
-          // App Info Section
-          Text(
-            'About TeleMedi',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          SizedBox(height: 12),
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.favorite,
-                    size: 60,
-                    color: Color(0xFF2196F3),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'TeleMedi v1.0.0',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Smart Healthcare. No Internet. No AI.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Divider(),
-                  SizedBox(height: 8),
-                  Text(
-                    '✅ Completely Offline\n'
-                    '✅ Privacy Protected\n'
-                    '✅ Trie-based Algorithm\n'
-                    '✅ No Cloud Dependency',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[700],
-                      height: 1.6,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
+    );
+  }
+
+  InputDecoration _inputDecoration({
+    required String label,
+    required IconData icon,
+  }) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon),
+      labelStyle: const TextStyle(fontFamily: 'K2D'),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: _inputDecoration(label: label, icon: icon),
+      style: const TextStyle(fontFamily: 'K2D'),
     );
   }
 }
